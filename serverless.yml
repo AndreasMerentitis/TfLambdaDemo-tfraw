@@ -6,8 +6,8 @@ provider:
   runtime: python3.6
   stage: dev
   credentials:
-    accessKeyId: AKIAQGQZEBNEQ3QIB67T
-    secretAccessKey: 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
+    accessKeyId: 
+    secretAccessKey: 
 
   iamRoleStatements:
     - Effect: Allow
