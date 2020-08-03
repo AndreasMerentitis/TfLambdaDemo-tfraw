@@ -47,7 +47,7 @@ def uploadHandler(event, context):
 
     response = {
         "statusCode": 200,
-        "body": json.dumps({'epoch': time_now})
+        "body": json.dumps({'start time': time_now})
     }
 
     return response
