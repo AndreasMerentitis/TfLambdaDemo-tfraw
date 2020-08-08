@@ -6,8 +6,8 @@ by: Mike Moritz
 
 updates by: Andreas Merentitis (ubuntu 20.04, py36)
 
-![relative path 1](/ml_train.png?raw=true "ml_train.png")
-![relative path 2](/ml_predict.png?raw=true "ml_predict.png")
+![relative path 1](/ml_train.jpeg?raw=true "ml_train.jpeg")
+![relative path 2](/ml_predict.jpeg?raw=true "ml_predict.jpeg")
 
 
 ### Prerequisites
