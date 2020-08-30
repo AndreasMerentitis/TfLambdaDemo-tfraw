@@ -1,19 +1,18 @@
 import logging
 import time
+
 try:
-    from urllib2 import urlopen
-    from urllib2 import HTTPError
+    from urllib2 import HTTPError, urlopen
 except ImportError:
     from urllib.request import urlopen
     from urllib.error import HTTPError
 
-
+import json
 import os
 import subprocess
-import click
 
+import click
 import requests
-import json
 
 @click.command(short_help='Classifies datapoints from json input file.')
 def datapoint_classification_client():
