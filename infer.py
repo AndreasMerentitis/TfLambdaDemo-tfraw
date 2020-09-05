@@ -44,20 +44,12 @@ def _easy_input_function(data_dict, batch_size=64):
     ds = ds.batch(64)
 
     return ds
-
-
-def inferHandler(event, context):
-    body = json.loads(event.get('body'))
-
-    # Read in prediction data as dictionary
-    # Keys should match _CSV_COLUMNS, values should be lists
-    predict_input = body['input']
     
-    logging.warning('predict_input is %s', predict_input)
-
-    # Read in epoch
-    epoch_files = body['epoch']
-    epoch_files = ''
+    
+def _predict_point(predict_input_point, epoch_files):
+    """
+    Makes predictions for a signle data point
+    """
 
     # Download model from S3 and extract
     boto3.Session(
@@ -80,7 +72,64 @@ def inferHandler(event, context):
 
     # Setup prediction
     predict_iter = classifier.predict(
-                        lambda:_easy_input_function(predict_input))
+                        lambda:_easy_input_function(predict_input_point))
+
+    # Iterate over prediction and convert to lists
+    predictions = []
+    for prediction in predict_iter:
+        for key in prediction:
+            prediction[key] = prediction[key].tolist()
+
+        predictions.append(prediction)
+
+    return predictions
+
+
+def inferHandler(event, context):
+    body = json.loads(event.get('body'))
+
+    # Read in prediction data as dictionary
+    # Keys should match _CSV_COLUMNS, values should be lists
+    predict_input = body['input']
+    
+    logging.warning('predict_input type is %s', type(predict_input))
+    logging.warning('predict_input is %s', predict_input)
+    
+    # Read in epoch
+    epoch_files = body['epoch']
+    epoch_files = ''
+    
+    if isinstance(predict_input, list): 
+        for jj in range(len(predict_input)):
+            predict_input_point = predict_input[jj]
+            logging.warning('predict_input_point type is %s', type(predict_input_point))
+            logging.warning('predict_input_point is %s', predict_input_point)
+            predictions = _predict_point(predict_input_point, epoch_files)
+    else: 
+        predict_input_point = predict_input
+
+    # Download model from S3 and extract
+    boto3.Session(
+        ).resource('s3'
+        ).Bucket(BUCKET
+        ).download_file(
+            os.path.join(epoch_files,'model.tar.gz'),
+            FILE_DIR+'model.tar.gz')
+
+    tarfile.open(FILE_DIR+'model.tar.gz', 'r').extractall(FILE_DIR)
+
+    # Create feature columns
+    wide_cols, deep_cols = census_data.build_model_columns()
+
+    # Load model
+    classifier = tf.estimator.LinearClassifier(
+                    feature_columns=wide_cols,
+                    model_dir=FILE_DIR+'tmp/model_'+epoch_files+'/',
+                    warm_start_from=FILE_DIR+'tmp/model_'+epoch_files+'/')
+
+    # Setup prediction
+    predict_iter = classifier.predict(
+                        lambda:_easy_input_function(predict_input_point))
 
     # Iterate over prediction and convert to lists
     predictions = []
