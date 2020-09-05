@@ -14,8 +14,6 @@ import subprocess
 import click
 import requests
 
-import pdb
-
 @click.command(short_help='Classifies datapoints from json input file.')
 def datapoint_classification_client():
     """Classifies datapoints from json input file.
@@ -34,7 +32,7 @@ def datapoint_classification_client():
     method = 'POST'
     headers = {'Content-Type': 'application/json'} 
     service = 'execute-api'
-    url = 'https://h8vfvq93a0.execute-api.eu-west-1.amazonaws.com/dev/infer'
+    url = 'https://m3rb53q6v6.execute-api.eu-west-1.amazonaws.com/dev/infer'
     region = 'eu-west-1'
 
     print('')
@@ -48,8 +46,6 @@ def datapoint_classification_client():
     data['input'] = points['input']
     data['epoch'] = points['epoch']
     json_data = json.dumps(data)
-    
-    pdb.set_trace()
 
     json_response = requests.request(method, url, auth=auth, data=json_data, headers=headers)
 
