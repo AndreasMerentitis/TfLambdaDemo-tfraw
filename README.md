@@ -68,7 +68,7 @@ python client_api_train.py
 python client_api_infer.py
 ```
 
-### Clean up (remove deployment) 
+### Clean up (remove deployment and artifacts) 
 
 
 ```
