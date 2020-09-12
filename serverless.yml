@@ -49,6 +49,15 @@ functions:
           path: infer
           method: post
 
+  inferfast:
+    handler: inferfast.inferfastHandler
+    timeout: 30
+    events:
+      - http:
+          path: inferfast
+          method: post
+
+
 plugins:
   - serverless-python-requirements
 custom:

@@ -23,41 +23,42 @@ def datapoint_classification_client():
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
 
-    logger.info('Training...')
+    with open('data_input.json') as json_file:  
+        points = json.load(json_file)
+
+    logger.info('Predicting...')
     start_time = time.time()
 
     method = 'POST'
     headers = {'Content-Type': 'application/json'} 
     service = 'execute-api'
-    url1 = 'https://1q8od92cui.execute-api.eu-west-1.amazonaws.com/dev/upload'
-    url2 = 'https://1q8od92cui.execute-api.eu-west-1.amazonaws.com/dev/train'
+    url = 'https://1q8od92cui.execute-api.eu-west-1.amazonaws.com/dev/inferfast'
     region = 'eu-west-1'
 
     print('')
-    print(url1)
-    print(url2)
+    print(url)
     print('')
 
     logger.info('Creating request...')
     
     auth = {}
+    data = {}
+    data['input'] = points['input']
+    data['epoch'] = points['epoch']
+    json_data = json.dumps(data)
 
-    json_response1 = requests.request(method, url1, auth=auth, headers=headers)
-    json_response2 = requests.request(method, url2, auth=auth, headers=headers)
+    json_response = requests.request(method, url, auth=auth, data=json_data, headers=headers)
 
     end_time = time.time()
     
     # Extract text from JSON
-    response1 = json.loads(json_response1.text)
-    flattened_response1 = [val for sublist in response1 for val in sublist]
-    print(response1)
-    
-    response2 = json.loads(json_response2.text)
-    flattened_response2 = [val for sublist in response2 for val in sublist]
-    print(response2)
+    response = json.loads(json_response.text)
+    flattened_response = [val for sublist in response for val in sublist]
+    print(response)
 
-    logger.info('End-to-end training (including network transfers) '
-                'took {} seconds.'.format(end_time - start_time))
+    logger.info('End-to-end prediction (including network transfers) '
+                'took {} seconds.'.format(
+                    len(points), end_time - start_time))
 
 
 import logging
