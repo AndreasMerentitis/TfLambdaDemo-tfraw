@@ -88,7 +88,7 @@ def _predict_point(predict_input_point, epoch_files):
     return predictions
 
 
-def inferHandler(event, context):
+def inferfastHandler(event, context):
     body = json.loads(event.get('body'))
 
     # Read in prediction data as dictionary
