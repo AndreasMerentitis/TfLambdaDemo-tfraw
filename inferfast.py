@@ -25,16 +25,11 @@ import queue
 import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor
 
-from boto3 import client as boto3_client
-
 q = queue.Queue()
-lambda_client = boto3_client('lambda')
-
 
 def feed_the_workers(datapoints, spacing):
-    """ Simulate outside actors sending in work to do, request each url twice """
+    """ Outside actors sending in work to do """
     for datapoint in datapoints:
-        #time.sleep(spacing)
         q.put(datapoint)
     return "DONE FEEDING"
 
@@ -73,6 +68,7 @@ def process_one_datapoint(executor, payload_one_item):
 
         predictions.append(prediction)
 
+    logging.warning('predictions in processing worker %s', predictions)
     return predictions
     
 
@@ -146,7 +142,7 @@ def inferfastHandler(event, context):
                 # fetch a url from the queue
                 datapoint = q.get()
                 
-                payload_one_item = {'data_point': [datapoint]}
+                payload_one_item = [datapoint]
                 logging.warning('payload_one_item value is %s', payload_one_item)
     
                 # Start the load operation and mark the future with its URL
