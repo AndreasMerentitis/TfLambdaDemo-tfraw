@@ -19,6 +19,11 @@ provider:
          - - "arn:aws:s3:::"
            - ${self:provider.environment.BUCKET}
            - "/*"
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+        - lambda:InvokeAsync
+      Resource: "*"
 
   environment:
     BUCKET: serverless-ml-1
@@ -49,12 +54,12 @@ functions:
           path: infer
           method: post
 
-  inferfast:
-    handler: inferfast.inferfastHandler
+  inferqueue:
+    handler: inferqueue.inferqueueHandler
     timeout: 30
     events:
       - http:
-          path: inferfast
+          path: inferqueue
           method: post
 
 
