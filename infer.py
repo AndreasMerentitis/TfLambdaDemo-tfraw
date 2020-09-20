@@ -88,8 +88,15 @@ def _predict_point(predict_input_point, epoch_files):
     return predictions
 
 
-def inferHandler(event, context):
-    body = json.loads(event.get('body'))
+def inferHandler(event, context): 
+    run_from_queue = False 
+    try:
+        # This path is executed when the lamda is invoked directly
+        body = json.loads(event.get('body'))
+    except:
+        # This path is executed when the lamda is invoked through the lambda queue
+        run_from_queue = True
+        body = event
 
     # Read in prediction data as dictionary
     # Keys should match _CSV_COLUMNS, values should be lists
@@ -103,12 +110,19 @@ def inferHandler(event, context):
     epoch_files = ''
     
     predictions_batch = []
-    if isinstance(predict_input, list): 
+    if isinstance(predict_input, list) and not run_from_queue: 
+        # Direct call with many datapoints
         for jj in range(len(predict_input)):
             predict_input_point = predict_input[jj][0]
             predictions = _predict_point(predict_input_point, epoch_files)
             predictions_batch.append(predictions)
+    elif run_from_queue: 
+        # Call from lambda queue
+        predict_input_point = predict_input[0]
+        predictions = _predict_point(predict_input_point, epoch_files)
+        predictions_batch.append(predictions)
     else: 
+        # Direct call with one datapoint
         predict_input_point = predict_input
         predictions = _predict_point(predict_input_point, epoch_files)
         predictions_batch.append(predictions)
