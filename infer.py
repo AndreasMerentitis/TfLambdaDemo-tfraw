@@ -85,6 +85,7 @@ def _predict_point(predict_input_point, epoch_files):
 
         predictions.append(prediction)
 
+    logging.warning('predictions is %s', predictions)
     return predictions
 
 
@@ -127,10 +128,20 @@ def inferHandler(event, context):
         predictions = _predict_point(predict_input_point, epoch_files)
         predictions_batch.append(predictions)
 
-    response = {
-        "statusCode": 200,
-        "body": json.dumps(predictions_batch,
+    if not run_from_queue: 
+        logging.warning('Return from normal execution')
+        response = {
+           "statusCode": 200,
+           "body": json.dumps(predictions_batch,
                             default=lambda x: x.decode('utf-8'))
-    }
+        }
+    else:
+        logging.warning('Return from queue execution')
+        response = {
+           "body": json.dumps(predictions_batch,
+                            default=lambda x: x.decode('utf-8'))
+        }
+        
+    logging.warning('response is %s', response)
 
     return response
