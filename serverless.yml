@@ -48,7 +48,8 @@ functions:
 
   infer:
     handler: infer.inferHandler
-    timeout: 300
+    memorySize: 3008
+    timeout: 30
     events:
       - http:
           path: infer
@@ -56,6 +57,7 @@ functions:
 
   inferqueue:
     handler: inferqueue.inferqueueHandler
+    memorySize: 3008
     timeout: 900
     events:
       - http:
