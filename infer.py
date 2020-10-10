@@ -110,6 +110,8 @@ def inferHandler(event, context):
     epoch_files = body['epoch']
     epoch_files = ''
     
+    logging.warning('run_from_queue is %s', run_from_queue)
+    
     predictions_batch = []
     if isinstance(predict_input, list) and not run_from_queue: 
         # Direct call with many datapoints
@@ -120,7 +122,11 @@ def inferHandler(event, context):
     elif run_from_queue: 
         # Call from lambda queue
         predict_input_point = predict_input[0]
+        if isinstance(predict_input_point, list):
+           predict_input_point = predict_input_point[0]
+        logging.warning('predict_input_point is %s', predict_input_point)
         predictions = _predict_point(predict_input_point, epoch_files)
+        logging.warning('predictions is %s', predictions)
         predictions_batch.append(predictions)
     else: 
         # Direct call with one datapoint

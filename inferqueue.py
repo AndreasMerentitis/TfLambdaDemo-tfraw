@@ -52,7 +52,8 @@ def process_one_datapoint(executor, payload_one_item):
             Payload=payload_one_item_json)
         )
         
-    logging.warning('predictions from process_one_datapoint is %s', predictions.result())    
+    logging.warning('predictions raw from process_one_datapoint is %s', predictions) 
+    logging.warning('predictions result from process_one_datapoint is %s', predictions.result())    
         
     responseFromChild = json.load(predictions['Payload'])
     logging.warning('responseFromChild is %s', responseFromChild)
@@ -144,11 +145,12 @@ def inferqueueHandler(event, context):
                     logging.warning('In try loop future is %s', future)
                     data = future.result()
                     logging.warning('In try loop data1 is %s', data)
-                    data = json.loads(data)
-                    logging.warning('In try loop data2 is %s', data)
-                    logging.warning('data value is %s', data) 
-                    results.append(data)
-                    results_datapoint_order.append(datapoint)
+                    if datapoint != 'FEEDER DONE':
+                        data = json.loads(data)
+                        logging.warning('In try loop data2 is %s', data)
+                        logging.warning('data value is %s', data) 
+                        results.append(data)
+                        results_datapoint_order.append(datapoint)
                 except Exception as exc:
                     print('%r generated an exception: %s' % (datapoint, exc))
                 else:
