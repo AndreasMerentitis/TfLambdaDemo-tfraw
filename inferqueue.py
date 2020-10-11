@@ -26,10 +26,15 @@ import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor
 
 q = queue.Queue()
+lambda_client = boto3.client('lambda')
 
 def feed_the_workers(datapoints, spacing):
     """ Outside actors sending in work to do """
+    count = 0 
     for datapoint in datapoints:
+        print(spacing)
+        count = count + 1
+        print(count)
         q.put(datapoint)
     return "DONE FEEDING"
 
@@ -45,47 +50,20 @@ def process_one_datapoint(executor, payload_one_item):
     
     logging.warning('payload_one_item_json from process_one_datapoint is %s', payload_one_item_json)
     
-    lambda_client = boto3.client('lambda')
     predictions = executor.submit(lambda_client.invoke(
             FunctionName='tflambdademo-dev-infer',
             InvocationType='RequestResponse',
+            LogType='Tail',
             Payload=payload_one_item_json)
         )
         
     logging.warning('predictions raw from process_one_datapoint is %s', predictions) 
-    logging.warning('predictions result from process_one_datapoint is %s', predictions.result())    
-        
+    #logging.warning('predictions result from process_one_datapoint is %s', predictions.result())    
+    
     responseFromChild = json.load(predictions['Payload'])
     logging.warning('responseFromChild is %s', responseFromChild)
     
     return responseFromChild
-    
-
-def _easy_input_function(data_dict, batch_size=64):
-    """
-    data_dict = {
-        '<csv_col_1>': ['<first_pred_value>', '<second_pred_value>']
-        '<csv_col_2>': ['<first_pred_value>', '<second_pred_value>']
-        ...
-    }
-    """
-
-    # Convert input data to numpy arrays
-    for col in data_dict:
-        col_ind = census_data._CSV_COLUMNS.index(col)
-        dtype = type(census_data._CSV_COLUMN_DEFAULTS[col_ind][0])
-        data_dict[col] = np.array(data_dict[col],
-                                        dtype=dtype)
-
-    try: 
-        labels = data_dict.pop('income_bracket')
-    except:
-        pass
-
-    ds = tf.data.Dataset.from_tensor_slices((data_dict, labels))
-    ds = ds.batch(64)
-
-    return ds
     
 
 def inferqueueHandler(event, context):
@@ -124,6 +102,10 @@ def inferqueueHandler(event, context):
             done, not_done = concurrent.futures.wait(
                 future_to_datapoint, timeout=0.0,
                 return_when=concurrent.futures.FIRST_COMPLETED)
+                
+            #done, not_done = concurrent.futures.wait(
+            #    future_to_datapoint, timeout=0.0,
+            #    return_when=concurrent.futures.ALL_COMPLETED)
     
             # if there is incoming work, start a new future
             while not q.empty():
@@ -143,18 +125,23 @@ def inferqueueHandler(event, context):
                 try:
                     logging.warning('In try loop')
                     logging.warning('In try loop future is %s', future)
-                    data = future.result()
-                    logging.warning('In try loop data1 is %s', data)
                     if datapoint != 'FEEDER DONE':
+                        print('In NOT FEEDER DONE')
+                        data = future.result()
+                        logging.warning('In try loop data1 is %s', data)
                         data = json.loads(data)
                         logging.warning('In try loop data2 is %s', data)
                         logging.warning('data value is %s', data) 
                         results.append(data)
                         results_datapoint_order.append(datapoint)
                 except Exception as exc:
-                    print('%r generated an exception: %s' % (datapoint, exc))
+                    print('In Exception path')
+                    print('exc: %s', exc)
+                    print('%r generated an exception: %s' % (future, exc))
+                    print('Finishing Exception path')
                 else:
                     if datapoint == 'FEEDER DONE':
+                        data = future.result()
                         print(data)
                     else:
                         print('%r page is %d bytes' % (datapoint, len(data)))

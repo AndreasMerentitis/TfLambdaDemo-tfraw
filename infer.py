@@ -144,6 +144,7 @@ def inferHandler(event, context):
     else:
         logging.warning('Return from queue execution')
         response = {
+           "statusCode": 200,
            "body": json.dumps(predictions_batch,
                             default=lambda x: x.decode('utf-8'))
         }
