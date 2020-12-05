@@ -172,5 +172,9 @@ def inferqueueHandler(event, context):
         "body": json.dumps(results_ordered,
                             default=lambda x: x.decode('utf-8'))
     }
-
     return response
+    
+    
+    
+   
+
