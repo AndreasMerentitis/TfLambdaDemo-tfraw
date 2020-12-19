@@ -1,6 +1,7 @@
 # Serverless Machine Learning on AWS Lambda with TensorFlow
 
 Configured to deploy a TensorFlow model to AWS Lambda using the Serverless framework.
+The model is a LinearClassifier Logistic model trained in the Lambda. 
 
 by: Mike Moritz
 
