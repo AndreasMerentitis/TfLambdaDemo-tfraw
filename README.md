@@ -81,6 +81,7 @@ sudo serverless remove --stage dev
 # Using data and extending the basic idea from these sources:
 * https://github.com/mikepm35/TfLambdaDemo
 * https://medium.com/@mike.p.moritz/running-tensorflow-on-aws-lambda-using-serverless-5acf20e00033
+* https://aws.amazon.com/blogs/machine-learning/how-to-deploy-deep-learning-models-with-aws-lambda-and-tensorflow/
 
 
 
