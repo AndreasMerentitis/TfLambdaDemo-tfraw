@@ -30,7 +30,7 @@ Make sure you have AWS access key and secrete keys setup locally, following this
 ### Download the code locally
 
 ```  
-serverless create --template-url https://github.com/AndreasMerentitis/TfLambdaDemo --path tf-lambda
+serverless create --template-url https://github.com/AndreasMerentitis/TfLambdaDemo-tfraw --path tf-lambdaraw
 ```
 
 ### Update S3 bucket to unique name
@@ -52,7 +52,7 @@ We can ignore the warning about not using 'unzip_requirements' as its needed to 
 
 
 ```
-cd tf-lambda
+cd tf-lambdaraw
 
 npm install
 
