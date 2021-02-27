@@ -25,7 +25,7 @@ pip install -r requirements.txt
 ```
 #### Setup AWS credentials
 
-Make sure you have AWS access key and secrete keys setup locally, following this video [here](https://www.youtube.com/watch?v=KngM5bfpttA)
+Make sure you have the AWS access key and secrete keys setup locally, following this video [here](https://www.youtube.com/watch?v=KngM5bfpttA)
 
 ### Download the code locally
 
