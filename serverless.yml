@@ -5,9 +5,6 @@ provider:
   region: eu-west-1
   runtime: python3.6
   stage: dev
-  credentials:
-    accessKeyId: 
-    secretAccessKey: 
 
   iamRoleStatements:
     - Effect: Allow
